@@ -40,9 +40,9 @@
 // Maximum key value is 0x7FFFFFFF.
 // NOTE: Keys won't be reloaded, initialized on first load only.
 //
-//packet_db_ver: 46
-packet_db_ver: default
-packet_keys_use: default
+packet_db_ver: 30
+//packet_db_ver: default
+//packet_keys_use: default
 
 packet_ver: 5
 0x0064,55
@@ -1781,6 +1781,13 @@ packet_keys: 0x01581359,0x452D6FFA,0x6AFB6E2E // [Shakto]
 0x0916,26,guildinvite2,2
 0x091d,41,bookingregreq,2:4:6
 0x08cb,10,ZC_PERSONAL_INFOMATION,2:4:6:8:10:11:13:15 //Still need further information
+0x08c9,2,cashshopitemlist,0
+0x0844,2,cashshopopen,0
+0x0849,16 //clif_cashshop_result
+0x0848,-1,cashshopbuy,2:6:4:10
+0x084a,2,cashshopclose,0
+0x08c9,2,cashshopitemlist,0
+0x0848,-1,cashshopbuy,2:6:4:10
 // Merge Item
 0x096D,-1,ZC_MERGE_ITEM_OPEN,2:4 // ZC_MERGE_ITEM_OPEN
 0x096E,-1,mergeitem_req,2:4 // CZ_REQ_MERGE_ITEM

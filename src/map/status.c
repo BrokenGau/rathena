@@ -6439,12 +6439,13 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 	if (sc == NULL || (sd && sd->state.permanent_speed))
 		return (unsigned short)cap_value(speed, MIN_WALK_SPEED, MAX_WALK_SPEED);
 
+	/**
 	if( sd && sd->ud.skilltimer != INVALID_TIMER && (pc_checkskill(sd,SA_FREECAST) > 0 || sd->ud.skill_id == LG_EXEEDBREAK) ) {
 		if( sd->ud.skill_id == LG_EXEEDBREAK )
 			speed_rate = 160 - 10 * sd->ud.skill_lv;
 		else
 			speed_rate = 175 - 5 * pc_checkskill(sd,SA_FREECAST);
-	} else {
+	}**/ else {
 		int val = 0;
 
 		// GetMoveHasteValue2()
@@ -6598,8 +6599,9 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 		speed = speed * speed_rate / 100;
 	if( sc->data[SC_STEELBODY] )
 		speed = 200;
-	if( sc->data[SC_DEFENDER] )
+	/** if( sc->data[SC_DEFENDER] )
 		speed = max(speed, 200);
+	**/
 	if( sc->data[SC_WALKSPEED] && sc->data[SC_WALKSPEED]->val1 > 0 ) // ChangeSpeed
 		speed = speed * 100 / sc->data[SC_WALKSPEED]->val1;
 
