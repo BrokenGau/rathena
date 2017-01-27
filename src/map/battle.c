@@ -3278,7 +3278,7 @@ static struct Damage battle_calc_multi_attack(struct Damage wd, struct block_lis
 
 	if( sd && !skill_id ) {	// if no skill_id passed, check for double attack [helvetica]
 		short i;
-		if( ( ( skill_lv = pc_checkskill(sd,TF_DOUBLE) ) > 0 && sd->weapontype1 == W_DAGGER )
+		if (((skill_lv = pc_checkskill(sd, TF_DOUBLE)) > 0 && sd->weapontype1 == W_DAGGER && !is_attack_critical(wd, src, target, skill_id, skill_lv, true))
 			|| ( sd->bonus.double_rate > 0 && sd->weapontype1 != W_FIST ) //Will fail bare-handed
 			|| ( sc && sc->data[SC_KAGEMUSYA] && sd->weapontype1 != W_FIST )) // Need confirmation
 		{	//Success chance is not added, the higher one is used [Skotlex]
@@ -3404,6 +3404,10 @@ static int battle_calc_attack_skill_ratio(struct Damage wd, struct block_list *s
 		case AC_DOUBLE:
 		case MA_DOUBLE:
 			skillratio += 10 * (skill_lv - 1);
+			if (sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_ROGUE){
+			// ATK_ADDRATE(wd.damage, wd.damage2, 20);
+			skillratio *= 2;
+			}
 			break;
 		case AC_SHOWER:
 		case MA_SHOWER:

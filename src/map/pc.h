@@ -333,6 +333,7 @@ struct map_session_data {
 	int invincible_timer;
 	unsigned int canlog_tick;
 	unsigned int canuseitem_tick;	// [Skotlex]
+	unsigned int warpgodelay_tick;
 	unsigned int canusecashfood_tick;
 	unsigned int canequip_tick;	// [Inkfish]
 	unsigned int cantalk_tick;

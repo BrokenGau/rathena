@@ -1123,6 +1123,7 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 #endif
 
 	sd->canuseitem_tick = tick;
+	sd->warpgodelay_tick = tick;	//TRO @go custom
 	sd->canusecashfood_tick = tick;
 	sd->canequip_tick = tick;
 	sd->cantalk_tick = tick;
@@ -7468,10 +7469,11 @@ void pc_damage(struct map_session_data *sd,struct block_list *src,unsigned int h
 	if(battle_config.prevent_logout_trigger&PLT_DAMAGE)
 		sd->canlog_tick = gettick();
 
-	if (src->type == BL_PC) {
+	if (src->type == BL_PC) 
 		((TBL_PC*)src)->canlog_tick = gettick();
 		sd->canlog_tick = gettick();
-	}
+		//sd->warpgodelay_tick = tick+warpgodelaycd; //This is the timer
+	
 	
 }
 

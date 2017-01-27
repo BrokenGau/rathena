@@ -456,16 +456,6 @@ ACMD_FUNC(mapmove)
 			return -1;
 	}
 
-	if (pc_isdead(sd))
-	{
-		clif_displaymessage(fd, "You cannot use this command when dead.");
-		return -1;
-	}
-	if (!pc_get_group_level(sd) && DIFF_TICK(gettick(), sd->canlog_tick) < 5000) {
-		clif_displaymessage(fd, "@warp cannot be issued since you were into battle recently");
-		return -1;
-	}
-
 	mapindex = mapindex_name2id(map_name);
 	if (mapindex)
 		m = map_mapindex2mapid(mapindex);
@@ -487,6 +477,14 @@ ACMD_FUNC(mapmove)
 	}
 	if ((map[m].flag.nowarpto && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) || !pc_job_can_entermap((enum e_job)sd->status.class_, m, sd->group_level)) {
 		clif_displaymessage(fd, msg_txt(sd,247));
+		return -1;
+	}
+	if( !pc_get_group_level(sd) && DIFF_TICK(gettick(),sd->warpgodelay_tick) < 10000 ) {
+		clif_displaymessage(fd,"Cannot use @warp for 10 seconds.");
+		return -1;
+	}
+	if( pc_isdead(sd) ) {
+		clif_displaymessage(fd, "Please click: Return to save point");
 		return -1;
 	}
 	if (sd->bl.m >= 0 && map[sd->bl.m].flag.nowarp && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
@@ -1872,6 +1870,7 @@ ACMD_FUNC(hair_color)
  *------------------------------------------*/
 ACMD_FUNC(go)
 {
+	unsigned int tick = gettick();	//	TRO @go custom
 	int i;
 	int town;
 	char map_name[MAP_NAME_LENGTH];
@@ -1932,6 +1931,10 @@ ACMD_FUNC(go)
 		clif_displaymessage(sd->fd,msg_txt(sd,995)); // You cannot use @go on this map.
 		return 0;
 	}
+if( !pc_get_group_level(sd) && DIFF_TICK(gettick(),sd->warpgodelay_tick) < 10000 ) {	//TRO @go custom
+		clif_displaymessage(fd,"Cannot use @go for 10 seconds.");
+		return -1;
+	}
 
 	memset(map_name, '\0', sizeof(map_name));
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -1955,7 +1958,7 @@ ACMD_FUNC(go)
 
 		return -1;
 	}
-	if (pc_isdead(sd))
+	/**if (pc_isdead(sd))
 	{
 		clif_displaymessage(fd, "You cannot use this command when dead.");
 		return -1;
@@ -1963,7 +1966,7 @@ ACMD_FUNC(go)
 	if (!pc_get_group_level(sd) && DIFF_TICK(gettick(), sd->canlog_tick) < 5000) {
 		clif_displaymessage(fd, "@go cannot be issued since you were into battle recently");
 		return -1;
-	}
+	}*/
 
 	// get possible name of the city
 	map_name[MAP_NAME_LENGTH-1] = '\0';
@@ -2063,6 +2066,10 @@ ACMD_FUNC(go)
 		}
 		if (sd->bl.m >= 0 && map[sd->bl.m].flag.nowarp && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 			clif_displaymessage(fd, msg_txt(sd,248));
+			return -1;
+		}
+		if( pc_isdead(sd) ) {
+			clif_displaymessage(fd, "Please click Return to save point");
 			return -1;
 		}
 		if (pc_setpos(sd, mapindex_name2id(data[town].map), data[town].x, data[town].y, CLR_TELEPORT) == SETPOS_OK) {
