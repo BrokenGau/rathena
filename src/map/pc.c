@@ -1616,6 +1616,13 @@ void pc_calc_skilltree(struct map_session_data *sd)
 				sd->status.skill[i-8].flag = SKILL_FLAG_TEMPORARY; // Tag it as a non-savable, non-uppable, bonus skill
 			}
 		}
+		// TRO Custom Blacksmith Parrying <3
+		if (sd->sc.count && sd->sc.data[SC_SPIRIT] && sd->sc.data[SC_SPIRIT]->val2 == SL_BLACKSMITH && i == LK_PARRYING)
+		{
+			sd->status.skill[i].id = i;
+			sd->status.skill[i].lv = 10; // Give level 10 Parrying
+			sd->status.skill[i].flag = SKILL_FLAG_TEMPORARY; // Tag it as a non-savable, non-uppable, bonus skill
+		}
 	}
 
 	// Removes Taekwon Ranker skill bonus

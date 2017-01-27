@@ -4514,13 +4514,11 @@ struct Damage battle_attack_sc_bonus(struct Damage wd, struct block_list *src, s
 				RE_ALLATK_ADDRATE(wd, sc->data[SC_ARCLOUSEDASH]->val4);
 			}
 		}
-
 		if (sd && wd.flag&BF_WEAPON && sc->data[SC_GVG_GIANT] && sc->data[SC_GVG_GIANT]->val3) {
 			ATK_ADDRATE(wd.damage, wd.damage2, sc->data[SC_GVG_GIANT]->val3);
 			RE_ALLATK_ADDRATE(wd, sc->data[SC_GVG_GIANT]->val3);
 		}
 	}
-
 	if ((wd.flag&(BF_LONG|BF_MAGIC)) == BF_LONG) {
 		if (sd && pc_checkskill(sd, SU_POWEROFLIFE) > 0) {
 			if (pc_checkskill(sd, SU_SCAROFTAROU) == 5 && pc_checkskill(sd, SU_PICKYPECK) == 5 && pc_checkskill(sd, SU_ARCLOUSEDASH) == 5 && pc_checkskill(sd, SU_LUNATICCARROTBEAT) == 5) {
@@ -4529,7 +4527,6 @@ struct Damage battle_attack_sc_bonus(struct Damage wd, struct block_list *src, s
 			}
 		}
 	}
-
 	return wd;
 }
 
@@ -4578,7 +4575,6 @@ struct Damage battle_calc_defense_reduction(struct Damage wd, struct block_list 
 
 	if (sc && sc->data[SC_EXPIATIO]) {
 		short i = 5 * sc->data[SC_EXPIATIO]->val1; // 5% per level
-
 		i = min(i,100); //cap it to 100 for 0 def min
 		def1 = (def1*(100-i))/100;
 		def2 = (def2*(100-i))/100;
@@ -4593,19 +4589,16 @@ struct Damage battle_calc_defense_reduction(struct Damage wd, struct block_list 
 
 		if( tsc->data[SC_CAMOUFLAGE] ){
 			short i = 5 * tsc->data[SC_CAMOUFLAGE]->val3; //5% per second
-
 			i = min(i,100); //cap it to 100 for 0 def min
 			def1 = (def1*(100-i))/100;
 			def2 = (def2*(100-i))/100;
 		}
-
 		if (tsc->data[SC_GT_REVITALIZE])
 			def2 += tsc->data[SC_GT_REVITALIZE]->val4;
 
 		if (tsc->data[SC_OVERED_BOOST] && target->type == BL_PC)
 			def1 = (def1 * tsc->data[SC_OVERED_BOOST]->val4) / 100;
 	}
-
 	if( battle_config.vit_penalty_type && battle_config.vit_penalty_target&target->type ) {
 		unsigned char target_count; //256 max targets should be a sane max
 
@@ -4735,7 +4728,6 @@ struct Damage battle_calc_attack_post_defense(struct Damage wd, struct block_lis
 
 #ifndef RENEWAL
 	wd = battle_calc_attack_masteries(wd, src, target, skill_id, skill_lv);
-
 	//Refine bonus
 	if (sd && battle_skill_stacks_masteries_vvs(skill_id) && skill_id != MO_INVESTIGATE && skill_id != MO_EXTREMITYFIST) { // Counts refine bonus multiple times
 		if (skill_id == MO_FINGEROFFENSIVE) {
@@ -4760,7 +4752,6 @@ struct Damage battle_calc_attack_post_defense(struct Damage wd, struct block_lis
 				ATK_ADDRATE(wd.damage, wd.damage2, 25);
 			break;
 	}
-
 	return wd;
 }
 
@@ -6816,6 +6807,9 @@ int64 battle_calc_return_damage(struct block_list* bl, struct block_list *src, i
 						rdamage += damage * sc->data[SC_SHIELDSPELL_DEF]->val2 / 100;
 						if (rdamage < 1) rdamage = 1;
 				}
+				if (sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_PRIEST){
+					rdamage += damage * 10 / 100; //tRO Custom; Priests return 10% of melee damage when Soul Linked
+				}
 			}
 		}
 	} else {
@@ -6923,12 +6917,9 @@ void battle_drain(struct map_session_data *sd, struct block_list *tbl, int64 rda
 
 	if (!CHK_RACE(race) && !CHK_CLASS(class_))
 		return;
-
 	memset(&d, 0, sizeof(d));
-
 	// Check for vanish HP/SP. !CHECKME: Which first, drain or vanish?
 	battle_vanish(sd, tbl, &d);
-
 	// Check for drain HP/SP
 	hp = sp = i = 0;
 	for (i = 0; i < 4; i++) {
@@ -6941,22 +6932,17 @@ void battle_drain(struct map_session_data *sd, struct block_list *tbl, int64 rda
 			wd = &sd->left_weapon;
 			damage = &ldamage;
 		}
-
 		if (*damage <= 0)
 			continue;
-
 		if( i == 1 || i == 3 ) {
 			hp = wd->hp_drain_class[class_] + wd->hp_drain_class[CLASS_ALL];
 			hp += battle_calc_drain(*damage, wd->hp_drain_rate.rate, wd->hp_drain_rate.per);
-
 			sp = wd->sp_drain_class[class_] + wd->sp_drain_class[CLASS_ALL];
 			sp += battle_calc_drain(*damage, wd->sp_drain_rate.rate, wd->sp_drain_rate.per);
-
 			if( hp ) {
 				//rhp += hp;
 				thp += hp;
 			}
-
 			if( sp ) {
 				//rsp += sp;
 				tsp += sp;
@@ -6964,22 +6950,18 @@ void battle_drain(struct map_session_data *sd, struct block_list *tbl, int64 rda
 		} else {
 			hp = wd->hp_drain_race[race] + wd->hp_drain_race[RC_ALL];
 			sp = wd->sp_drain_race[race] + wd->sp_drain_race[RC_ALL];
-
 			if( hp ) {
 				//rhp += hp;
 				thp += hp;
 			}
-
 			if( sp ) {
 				//rsp += sp;
 				tsp += sp;
 			}
 		}
 	}
-
 	if (!thp && !tsp)
 		return;
-
 	status_heal(&sd->bl, thp, tsp, battle_config.show_hp_sp_drain?3:1);
 
 	//if (rhp || rsp)
@@ -7019,7 +7001,6 @@ int battle_damage_area(struct block_list *bl, va_list ap) {
 		skill_additional_effect(src, bl, CR_REFLECTSHIELD, 1, BF_WEAPON|BF_SHORT|BF_NORMAL,ATK_DEF,tick);
 		map_freeblock_unlock();
 	}
-
 	return 0;
 }
 /*==========================================
